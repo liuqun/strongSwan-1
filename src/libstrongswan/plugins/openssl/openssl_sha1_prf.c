@@ -20,6 +20,7 @@
 #include "openssl_sha1_prf.h"
 
 #include <openssl/sha.h>
+#include <openssl/evp.h>
 #include <crypto/hashers/hasher.h>
 
 typedef struct private_openssl_sha1_prf_t private_openssl_sha1_prf_t;
@@ -38,19 +39,53 @@ struct private_openssl_sha1_prf_t {
 	 * SHA1 context
 	 */
 	SHA_CTX ctx;
+	/**
+	 * SM3 context
+	 */
+	EVP_MD_CTX *sm3ctx;
+
+	pseudo_random_function_t algo;
+	uint32_t key[8];
+	uint32_t data[8];
 };
 
 METHOD(prf_t, get_bytes, bool,
 	private_openssl_sha1_prf_t *this, chunk_t seed, uint8_t *bytes)
 {
 #if OPENSSL_VERSION_NUMBER >= 0x10000000L
-	if (!SHA1_Update(&this->ctx, seed.ptr, seed.len))
-	{
-		return FALSE;
+	if( this->algo == PRF_HMAC_SM3){
+		int dgstlen = 0;
+		if(!EVP_DigestUpdate(this->sm3ctx, seed.ptr, seed.len))
+		{
+			return FALSE;
+		}
+
+		if(!EVP_DigestFinal_ex(this->sm3ctx, (unsigned char *)this->data, &dgstlen))
+		{
+			return FALSE;
+		}
+
+	}else{
+		if (!SHA1_Update(&this->ctx, seed.ptr, seed.len))
+		{
+			return FALSE;
+		}
 	}
 #else /* OPENSSL_VERSION_NUMBER < 1.0 */
 	SHA1_Update(&this->ctx, seed.ptr, seed.len);
 #endif
+
+	if( this->algo == PRF_HMAC_SM3){
+		if (bytes)
+		{
+			uint32_t *hash = (uint32_t*)bytes;
+			int i;
+			for(i=0;i<8;i++)
+				hash[i] = htonl(this->data[i]);
+		}
+		EVP_MD_CTX_free(this->sm3ctx);
+		return TRUE;
+	}
 
 	if (bytes)
 	{
@@ -69,7 +104,10 @@ METHOD(prf_t, get_bytes, bool,
 METHOD(prf_t, get_block_size, size_t,
 	private_openssl_sha1_prf_t *this)
 {
-	return HASH_SIZE_SHA1;
+	if( this->algo == PRF_HMAC_SM3)
+		return HASH_SIZE_SM3;
+	else
+		return HASH_SIZE_SHA1;
 }
 
 METHOD(prf_t, allocate_bytes, bool,
@@ -77,7 +115,10 @@ METHOD(prf_t, allocate_bytes, bool,
 {
 	if (chunk)
 	{
-		*chunk = chunk_alloc(HASH_SIZE_SHA1);
+		if( this->algo == PRF_HMAC_SM3)
+			*chunk = chunk_alloc(HASH_SIZE_SM3);
+		else
+			*chunk = chunk_alloc(HASH_SIZE_SHA1);
 		return get_bytes(this, seed, chunk->ptr);
 	}
 	return get_bytes(this, seed, NULL);
@@ -86,20 +127,47 @@ METHOD(prf_t, allocate_bytes, bool,
 METHOD(prf_t, get_key_size, size_t,
 	private_openssl_sha1_prf_t *this)
 {
-	return HASH_SIZE_SHA1;
+	if( this->algo == PRF_HMAC_SM3)
+		return HASH_SIZE_SM3;
+	else
+		return HASH_SIZE_SHA1;
 }
 
 METHOD(prf_t, set_key, bool,
 	private_openssl_sha1_prf_t *this, chunk_t key)
 {
 #if OPENSSL_VERSION_NUMBER >= 0x10000000L
-	if (!SHA1_Init(&this->ctx))
-	{
-		return FALSE;
+	if( this->algo == PRF_HMAC_SM3){
+		if(!(this->sm3ctx = EVP_MD_CTX_new()))
+		{
+			return FALSE;
+		}
+		if(!EVP_DigestInit_ex(this->sm3ctx, EVP_sm3(), NULL)){
+
+			EVP_MD_CTX_free(this->sm3ctx);
+			return FALSE;
+		}
+	}else{
+		if (!SHA1_Init(&this->ctx))
+		{
+			return FALSE;
+		}
 	}
 #else /* OPENSSL_VERSION_NUMBER < 1.0 */
 	SHA1_Init(&this->ctx);
 #endif
+	if( this->algo == PRF_HMAC_SM3){
+		int i;
+		if (key.len != 32)
+		{
+			return FALSE;
+		}
+
+		for(i=0;i<8;i++)
+			this->key[i] = untoh32(key.ptr + i*4);
+
+		return TRUE;
+	}
 
 	if (key.len % 4)
 	{
@@ -141,7 +209,7 @@ openssl_sha1_prf_t *openssl_sha1_prf_create(pseudo_random_function_t algo)
 {
 	private_openssl_sha1_prf_t *this;
 
-	if (algo != PRF_KEYED_SHA1)
+	if (algo != PRF_KEYED_SHA1 && algo != PRF_HMAC_SM3)
 	{
 		return NULL;
 	}
@@ -157,6 +225,7 @@ openssl_sha1_prf_t *openssl_sha1_prf_create(pseudo_random_function_t algo)
 				.destroy = _destroy,
 			},
 		},
+		.algo = algo,
 	);
 
 	return &this->public;
