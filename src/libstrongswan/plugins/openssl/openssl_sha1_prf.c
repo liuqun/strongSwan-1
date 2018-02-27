@@ -83,7 +83,6 @@ METHOD(prf_t, get_bytes, bool,
 			for(i=0;i<8;i++)
 				hash[i] = htonl(this->data[i]);
 		}
-		EVP_MD_CTX_free(this->sm3ctx);
 		return TRUE;
 	}
 
@@ -160,7 +159,8 @@ METHOD(prf_t, set_key, bool,
 		int i;
 		if (key.len != 32)
 		{
-			return FALSE;
+			printf(" openssl sm3 prf key len err! \n");
+			//return FALSE;
 		}
 
 		for(i=0;i<8;i++)
@@ -199,6 +199,8 @@ METHOD(prf_t, set_key, bool,
 METHOD(prf_t, destroy, void,
 	private_openssl_sha1_prf_t *this)
 {
+	if(this->sm3ctx)
+		EVP_MD_CTX_free(this->sm3ctx);
 	free(this);
 }
 

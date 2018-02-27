@@ -207,10 +207,6 @@ bool encryption_algorithm_is_aead(encryption_algorithm_t alg)
 {
 	switch (alg)
 	{
-		case ENCR_SM1_ECB:
-		case ENCR_SM1_CBC:
-		case ENCR_SM4_ECB:
-		case ENCR_SM4_CBC:
 		case ENCR_AES_CCM_ICV8:
 		case ENCR_AES_CCM_ICV12:
 		case ENCR_AES_CCM_ICV16:
