@@ -62,8 +62,7 @@ enum diffie_hellman_group_t {
 	ECP_384_BP    = 29,
 	ECP_512_BP    = 30,
 	CURVE_25519   = 31,
-	CURVE_SM2     = 32,
-	CURVE_448     = 33,
+	CURVE_448     = 32,
 	/** insecure NULL diffie hellman group for testing, in PRIVATE USE */
 	MODP_NULL = 1024,
 	/** MODP group with custom generator/prime */
@@ -73,6 +72,8 @@ enum diffie_hellman_group_t {
 	NTRU_192_BIT = 1032,
 	NTRU_256_BIT = 1033,
 	NH_128_BIT   = 1040,
+	/** Custom SM2 Curve group defined locally, in PRIVATE USE */
+	CURVE_SM2 = 1050,
 	/** internally used DH group with additional parameters g and p, outside
 	 * of PRIVATE USE (i.e. IKEv2 DH group range) so it can't be negotiated */
 	MODP_CUSTOM = 65536,

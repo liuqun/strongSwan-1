@@ -43,7 +43,6 @@ ENUM_NEXT(diffie_hellman_group_names, MODP_1024_160, CURVE_448, ECP_521_BIT,
 	"ECP_384_BP",
 	"ECP_512_BP",
 	"CURVE_25519",
-	"CURVE_SM2",
 	"CURVE_448");
 ENUM_NEXT(diffie_hellman_group_names, MODP_NULL, MODP_NULL, CURVE_448,
 	"MODP_NULL");
@@ -54,7 +53,9 @@ ENUM_NEXT(diffie_hellman_group_names, NTRU_112_BIT, NTRU_256_BIT, MODP_NULL,
 	"NTRU_256");
 ENUM_NEXT(diffie_hellman_group_names, NH_128_BIT, NH_128_BIT, NTRU_256_BIT,
 	"NEWHOPE_128");
-ENUM_NEXT(diffie_hellman_group_names, MODP_CUSTOM, MODP_CUSTOM, NH_128_BIT,
+ENUM_NEXT(diffie_hellman_group_names, CURVE_SM2, CURVE_SM2, NH_128_BIT,
+	"CURVE_SM2");
+ENUM_NEXT(diffie_hellman_group_names, MODP_CUSTOM, MODP_CUSTOM, CURVE_SM2,
 	"MODP_CUSTOM");
 ENUM_END(diffie_hellman_group_names, MODP_CUSTOM);
 
