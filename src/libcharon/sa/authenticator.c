@@ -37,17 +37,17 @@ ENUM_NEXT(auth_method_names, AUTH_ECDSA_256, AUTH_DS, AUTH_DSS,
 	"ECDSA-521 signature",
 	"secure password method",
 	"NULL authentication",
-	"SM2 signature",
 	"digital signature");
-ENUM_NEXT(auth_method_names, AUTH_XAUTH_INIT_PSK, AUTH_HYBRID_RESP_RSA, AUTH_DS,
+ENUM_NEXT(auth_method_names, AUTH_XAUTH_INIT_PSK, AUTH_SM2, AUTH_DS,
 	"XAuthInitPSK",
 	"XAuthRespPSK",
 	"XAuthInitRSA",
 	"XauthRespRSA",
 	"HybridInitRSA",
 	"HybridRespRSA",
+	"SM2 signature",
 );
-ENUM_END(auth_method_names, AUTH_HYBRID_RESP_RSA);
+ENUM_END(auth_method_names, AUTH_SM2);
 
 #ifdef USE_IKEV2
 
