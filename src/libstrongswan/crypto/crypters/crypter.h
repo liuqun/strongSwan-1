@@ -57,17 +57,22 @@ enum encryption_algorithm_t {
 	ENCR_CAMELLIA_CCM_ICV8 =  25,
 	ENCR_CAMELLIA_CCM_ICV12 = 26,
 	ENCR_CAMELLIA_CCM_ICV16 = 27,
-	ENCR_SM1_ECB            = 28,
-	ENCR_SM1_CBC            = 29,
-	ENCR_SM4_ECB            = 30,
-	ENCR_SM4_CBC            = 31,
-	ENCR_CHACHA20_POLY1305 =  32,
+	ENCR_CHACHA20_POLY1305 =  28,
 	ENCR_UNDEFINED =        1024,
 	ENCR_DES_ECB =          1025,
 	ENCR_SERPENT_CBC =      1026,
 	ENCR_TWOFISH_CBC =      1027,
 	/* see macros below to handle RC2 (effective) key length */
 	ENCR_RC2_CBC =          1028,
+	/* SM1 and SM4 block ciphers
+	(Security proposal: ECB mode is used for early prototypes and tests only.
+	You should NEVER use ECB mode in products.)
+	(ECB即电子密码本模式的加密强度不足, 不建议使用. 推荐只使用CBC模式)
+	*/
+	ENCR_SM1_ECB, /* Warning: NEVER use ECB mode in products. */
+	ENCR_SM1_CBC, /* Note: SM1 is provided by authorized cryptographic hardware. */
+	ENCR_SM4_ECB, /* Warning: NEVER use ECB mode in products. */
+	ENCR_SM4_CBC,
 };
 
 #define DES_BLOCK_SIZE			 8

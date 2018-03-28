@@ -46,10 +46,6 @@ ENUM_NEXT(encryption_algorithm_names, ENCR_CAMELLIA_CBC, ENCR_CHACHA20_POLY1305,
 	"CAMELLIA_CCM_8",
 	"CAMELLIA_CCM_12",
 	"CAMELLIA_CCM_16",
-	"SM1_ECB",
-	"SM1_CBC",
-	"SM4_ECB",
-	"SM4_CBC",
 	"CHACHA20_POLY1305");
 ENUM_NEXT(encryption_algorithm_names, ENCR_UNDEFINED, ENCR_RC2_CBC, ENCR_CHACHA20_POLY1305,
 	"UNDEFINED",
@@ -57,7 +53,13 @@ ENUM_NEXT(encryption_algorithm_names, ENCR_UNDEFINED, ENCR_RC2_CBC, ENCR_CHACHA2
 	"SERPENT_CBC",
 	"TWOFISH_CBC",
 	"RC2_CBC");
-ENUM_END(encryption_algorithm_names, ENCR_RC2_CBC);
+ENUM_NEXT(encryption_algorithm_names, ENCR_SM1_ECB, ENCR_SM4_CBC, ENCR_RC2_CBC
+	"SM1_ECB",
+	"SM1_CBC",
+	"SM4_ECB",
+	"SM4_CBC",
+);
+ENUM_END(encryption_algorithm_names, ENCR_SM4_CBC);
 
 /*
  * Described in header.
