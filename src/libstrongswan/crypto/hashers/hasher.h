@@ -40,9 +40,8 @@ enum hash_algorithm_t {
 	HASH_SHA256			= 2,
 	HASH_SHA384			= 3,
 	HASH_SHA512			= 4,
-	HASH_SM3			= 5,
 	/* draft-ietf-ipsecme-eddsa (RFC TBA) */
-	HASH_IDENTITY		= 6,
+	HASH_IDENTITY		= 5,
 	/* use private use range for algorithms not defined/permitted by RFC 7427 */
 	HASH_UNKNOWN 		= 1024,
 	HASH_MD2 			= 1025,
@@ -52,7 +51,9 @@ enum hash_algorithm_t {
 	HASH_SHA3_224		= 1029,
 	HASH_SHA3_256		= 1030,
 	HASH_SHA3_384		= 1031,
-	HASH_SHA3_512		= 1032
+	HASH_SHA3_512		= 1032,
+	/* SM3 hash algorithm (in PRIVATE USE range) */
+	HASH_SM3,
 };
 
 #define HASH_SIZE_MD2		16
